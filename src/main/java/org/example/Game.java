@@ -24,25 +24,46 @@ public class Game {
     public void playRound() {
         System.out.println(board);
         if (player1Turn) {
-            System.out.println("Player 1's turn (White)");
+            System.out.println("Player 1's turn (Orange)");
         } else {
             System.out.println("Player 2's turn (Black)");
         }
 
         int fromX, fromY, toX, toY;
         while (true) {
+            clearConsole();
             System.out.print("Enter starting position (e.g., A1): ");
             String fromPosition = scanner.next().toUpperCase();
+
+            // Sprawdzamy, czy wprowadzony ciąg jest równy "Q"
+            if (fromPosition.equals("Q")) {
+                if (confirmQuit()) {
+                    System.out.println("Exiting the game...");
+                    return;
+                } else {
+                    continue;
+                }
+            }
+
             fromX = fromPosition.charAt(0) - 'A';
             fromY = Integer.parseInt(fromPosition.substring(1)) - 1;
 
             System.out.print("Enter ending position (e.g., B2): ");
             String toPosition = scanner.next().toUpperCase();
+
+            if (toPosition.equals("Q")) {
+                if (confirmQuit()) {
+                    System.out.println("Exiting the game...");
+                    return;
+                } else {
+                    continue;
+                }
+            }
+
             toX = toPosition.charAt(0) - 'A';
             toY = Integer.parseInt(toPosition.substring(1)) - 1;
 
             if (isValidMove(fromX, fromY, toX, toY)) {
-                clearConsole();
                 break;
             } else {
                 System.out.println("Invalid move. Please try again.");
@@ -79,6 +100,22 @@ public class Game {
             return true;
         }
         return false;
+    }
+
+    private boolean confirmQuit() {
+        System.out.print("Do you want to quit the game? (Y/N): ");
+        String quitChoice = scanner.next().toUpperCase();
+        if (quitChoice.equals("Y")) {
+            System.out.print("Do you want to start a new game? (Y/N): ");
+            String newGameChoice = scanner.next().toUpperCase();
+            if (newGameChoice.equals("Y")) {
+                Main.main(new String[0]);
+            } else {
+                System.out.println("Goodbye!");
+                System.exit(0);
+            }
+        }
+        return quitChoice.equals("Y");
     }
 
     public static void clearConsole() {

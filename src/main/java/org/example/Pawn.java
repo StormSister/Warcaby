@@ -45,7 +45,8 @@ public class Pawn {
             int middleX = (newX + currentX) / 2;
             int middleY = (newY + currentY) / 2;
 
-            if (fields[middleX][middleY] != null && fields[middleX][middleY].getColor() != color &&
+            if (fields[middleX][middleY] != null &&
+                    fields[middleX][middleY].getColor() != color &&
                     fields[newX][newY] == null) {
                 return true;
             }
@@ -63,9 +64,9 @@ public class Pawn {
     @Override
     public String toString() {
         if (color == Color.WHITE) {
-            return "🔘";
+            return "\uD83D\uDD35";
         } else {
-            return "⭕";
+            return "\uD83D\uDFE0";
         }
     }
 }

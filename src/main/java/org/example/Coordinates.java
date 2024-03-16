@@ -4,13 +4,11 @@ public class Coordinates {
     private int x;
     private int y;
 
-    // Constructor
     public Coordinates(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    // Getters and setters for x and y
     public int getX() {
         return x;
     }

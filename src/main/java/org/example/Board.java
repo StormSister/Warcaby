@@ -34,6 +34,7 @@ public class Board {
                 System.out.println("Invalid input. Please enter a valid integer.");
                 scanner.next();
             }
+            scanner.close();
         }
     }
 
@@ -53,6 +54,7 @@ public class Board {
             }
         }
     }
+
     public void removePawn(int row, int col) {
         if (isValidPosition(row, col) && fields[row][col] != null) {
             fields[row][col] = null;
@@ -69,16 +71,14 @@ public class Board {
                 fields[fromRow][fromCol] != null && fields[toRow][toCol] == null) {
             Pawn pawn = fields[fromRow][fromCol];
 
-            // Sprawdź czy ruch jest możliwy
             if (pawn.isValidMove(toRow, toCol)) {
                 int middleRow = (fromRow + toRow) / 2;
                 int middleCol = (fromCol + toCol) / 2;
 
-                // Jeśli ruch jest biciem
                 if (Math.abs(toRow - fromRow) == 2 && Math.abs(toCol - fromCol) == 2 &&
                         fields[middleRow][middleCol] != null &&
                         fields[middleRow][middleCol].getColor() != pawn.getColor()) {
-                    removePawn(middleRow, middleCol); // Usuń pionka przeciwnika
+                    removePawn(middleRow, middleCol);
                 }
 
                 fields[toRow][toCol] = pawn;
