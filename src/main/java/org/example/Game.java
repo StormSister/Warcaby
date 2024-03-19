@@ -35,7 +35,7 @@ public class Game {
             System.out.print("Enter starting position (e.g., A1): ");
             String fromPosition = scanner.next().toUpperCase();
 
-            // Sprawdzamy, czy wprowadzony ciąg jest równy "Q"
+
             if (fromPosition.equals("Q")) {
                 if (confirmQuit()) {
                     System.out.println("Exiting the game...");
@@ -62,11 +62,12 @@ public class Game {
 
             toX = toPosition.charAt(0) - 'A';
             toY = Integer.parseInt(toPosition.substring(1)) - 1;
+            Pawn pawn = board.getFields()[fromY][fromX];
 
             if (isValidMove(fromX, fromY, toX, toY)) {
                 break;
             } else {
-                System.out.println("Invalid move. Please try again.");
+                System.out.println("Invalid move. Please try again. Game");
             }
         }
 

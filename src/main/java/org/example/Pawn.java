@@ -29,6 +29,7 @@ public class Pawn {
         return isCrowned;
     }
 
+
     public void setCrowned(boolean crowned) {
         isCrowned = crowned;
     }
@@ -41,23 +42,26 @@ public class Pawn {
         int currentX = position.getX();
         int currentY = position.getY();
 
-        if (Math.abs(newX - currentX) == 2 && Math.abs(newY - currentY) == 2) {
+        if (Math.abs(newX - currentX) == 1 && Math.abs(newY - currentY) == 1) {
+            return fields[newX][newY] == null;
+        }
+
+        else if (Math.abs(newX - currentX) == 2 && Math.abs(newY - currentY) == 2) {
+
             int middleX = (newX + currentX) / 2;
             int middleY = (newY + currentY) / 2;
 
-            if (fields[middleX][middleY] != null &&
+            return fields[middleX][middleY] != null &&
                     fields[middleX][middleY].getColor() != color &&
-                    fields[newX][newY] == null) {
-                return true;
-            }
-        } else if (Math.abs(newX - currentX) == 1 && Math.abs(newY - currentY) == 1) {
-            return fields[newX][newY] == null;
+                    fields[newX][newY] == null;
         }
         return false;
     }
     private boolean isValidPosition(int x, int y) {
         return x >= 0 && x < size && y >= 0 && y < size;
     }
+
+
 
 
 

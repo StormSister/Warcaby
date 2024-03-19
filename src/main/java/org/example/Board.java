@@ -57,38 +57,52 @@ public class Board {
 
     public void removePawn(int row, int col) {
         if (isValidPosition(row, col) && fields[row][col] != null) {
-            fields[row][col] = null;
-            if (fields[row][col].getColor() == Color.WHITE) {
+            Color pawnColor = fields[row][col].getColor();
+            if (pawnColor == Color.WHITE) {
                 player1Count--;
-            } else {
+            } else if (pawnColor == Color.BLACK) {
                 player2Count--;
             }
+            fields[row][col] = null;
         }
     }
 
     public void movePawn(int fromRow, int fromCol, int toRow, int toCol) {
-        if (isValidPosition(fromRow, fromCol) && isValidPosition(toRow, toCol) &&
-                fields[fromRow][fromCol] != null && fields[toRow][toCol] == null) {
-            Pawn pawn = fields[fromRow][fromCol];
-
-            if (pawn.isValidMove(toRow, toCol)) {
-                int middleRow = (fromRow + toRow) / 2;
-                int middleCol = (fromCol + toCol) / 2;
-
-                if (Math.abs(toRow - fromRow) == 2 && Math.abs(toCol - fromCol) == 2 &&
-                        fields[middleRow][middleCol] != null &&
-                        fields[middleRow][middleCol].getColor() != pawn.getColor()) {
-                    removePawn(middleRow, middleCol);
-                }
-
-                fields[toRow][toCol] = pawn;
-                fields[fromRow][fromCol] = null;
-            } else {
-                System.out.println("Invalid move. Please try again.");
-            }
-        } else {
-            System.out.println("Invalid move. Please try again.");
+        if (!isValidPosition(fromRow, fromCol) || !isValidPosition(toRow, toCol)) {
+            System.out.println("Invalid move. Please try again. A");
+            return;
         }
+
+        Pawn pawn = fields[fromRow][fromCol];
+        if (pawn == null) {
+            System.out.println("Invalid move. Please try again. B");
+            return;
+        }
+
+        if (fields[toRow][toCol] != null) {
+            System.out.println("Invalid move. Please try again. C");
+            return;
+        }
+
+        if (!pawn.isValidMove(toRow, toCol)) {
+            System.out.println("Invalid move. Please try again. D");
+            return;
+        }
+
+        int middleRow = (fromRow + toRow) / 2;
+        int middleCol = (fromCol + toCol) / 2;
+
+        if (Math.abs(toRow - fromRow) == 2 && Math.abs(toCol - fromCol) == 2 &&
+                fields[middleRow][middleCol] != null &&
+                fields[middleRow][middleCol].getColor() != pawn.getColor()) {
+            removePawn(middleRow, middleCol);
+        }
+        Coordinates coordinates = pawn.getPosition();
+        coordinates.setX(toRow);
+        coordinates.setY(toCol);
+
+        fields[toRow][toCol] = pawn;
+        fields[fromRow][fromCol] = null;
     }
 
     public Pawn[][] getFields() {
