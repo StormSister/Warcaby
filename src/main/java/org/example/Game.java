@@ -1,6 +1,9 @@
 package org.example;
 
 import java.util.Scanner;
+import java.io.File; // Import for File
+import java.io.FileNotFoundException; // Import for FileNotFoundException
+
 
 
 public class Game {
@@ -15,26 +18,41 @@ public class Game {
     }
 
     public void start() {
+        displayAsciiArt("src/main/ascii_art.txt");
         while (!checkForWinner()) {
             playRound();
         }
         scanner.close();
     }
 
+    private void displayAsciiArt(String filePath) {
+        try {
+            File file = new File(filePath);
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                System.out.println(line);
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     public void playRound() {
         System.out.println(board);
         if (player1Turn) {
-            System.out.println("Player 1's turn (Orange)");
+            System.out.println("Player 1's turn (Blue)");
         } else {
-            System.out.println("Player 2's turn (Black)");
+            System.out.println("Player 2's turn (Orange)");
         }
 
         int fromX, fromY, toX, toY;
         while (true) {
             clearConsole();
-            System.out.print("Enter starting position (e.g., A1): ");
-            String fromPosition = scanner.next().toUpperCase();
-
+            System.out.print("Enter starting position (e.g., A1, A 12) or Q to quit: ");
+            String fromPosition = scanner.nextLine().toUpperCase().trim();
 
             if (fromPosition.equals("Q")) {
                 if (confirmQuit()) {
@@ -45,11 +63,17 @@ public class Game {
                 }
             }
 
+            if (!isValidCoordinateFormat(fromPosition)) {
+                System.out.println("Error: Invalid format. Please enter coordinates in the format A1, B2, etc.");
+                continue;
+            }
+
+            fromPosition = fromPosition.replaceAll("\\s", "");
             fromX = fromPosition.charAt(0) - 'A';
             fromY = Integer.parseInt(fromPosition.substring(1)) - 1;
 
-            System.out.print("Enter ending position (e.g., B2): ");
-            String toPosition = scanner.next().toUpperCase();
+            System.out.print("Enter ending position (e.g., B2, B 15) or Q to quit: ");
+            String toPosition = scanner.nextLine().toUpperCase().trim();
 
             if (toPosition.equals("Q")) {
                 if (confirmQuit()) {
@@ -60,21 +84,32 @@ public class Game {
                 }
             }
 
+            if (!isValidCoordinateFormat(toPosition)) {
+                System.out.println("Error: Invalid format. Please enter coordinates in the format A1, B2, etc.");
+                continue;
+            }
+
+            toPosition = toPosition.replaceAll("\\s", "");
             toX = toPosition.charAt(0) - 'A';
             toY = Integer.parseInt(toPosition.substring(1)) - 1;
+
             Pawn pawn = board.getFields()[fromY][fromX];
 
             if (isValidMove(fromX, fromY, toX, toY)) {
                 break;
             } else {
-                System.out.println("Invalid move. Please try again. Game");
+                System.out.println("Invalid move. Please try again.");
             }
         }
 
         board.movePawn(fromY, fromX, toY, toX);
-
         player1Turn = !player1Turn;
     }
+
+    private boolean isValidCoordinateFormat(String input) {
+        return input.matches("^[A-Za-z]\\s?(1[0-9]|20|[1-9])$");
+    }
+
 
     private boolean isValidMove(int fromX, int fromY, int toX, int toY) {
         if (!board.isValidPosition(fromY, fromX) || !board.isValidPosition(toY, toX)) {

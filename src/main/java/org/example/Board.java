@@ -97,12 +97,18 @@ public class Board {
                 fields[middleRow][middleCol].getColor() != pawn.getColor()) {
             removePawn(middleRow, middleCol);
         }
+
         Coordinates coordinates = pawn.getPosition();
         coordinates.setX(toRow);
         coordinates.setY(toCol);
 
         fields[toRow][toCol] = pawn;
         fields[fromRow][fromCol] = null;
+
+
+        if (toRow == 0 || toRow == size - 1) {
+            pawn.setCrowned(true);
+        }
     }
 
     public Pawn[][] getFields() {
