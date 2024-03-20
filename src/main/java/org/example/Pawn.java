@@ -34,32 +34,6 @@ public class Pawn {
         isCrowned = crowned;
     }
 
-    //    public boolean isValidMove(int newX, int newY) {
-//        if (!isValidPosition(newX, newY)) {
-//            return false;
-//        }
-//
-//        int currentX = position.getX();
-//        int currentY = position.getY();
-//
-//        if (Math.abs(newX - currentX) == 1 && Math.abs(newY - currentY) == 1) {
-//            return fields[newX][newY] == null;
-//        }
-//
-//        else if (Math.abs(newX - currentX) == 2 && Math.abs(newY - currentY) == 2) {
-//
-//            int middleX = (newX + currentX) / 2;
-//            int middleY = (newY + currentY) / 2;
-//
-//            return fields[middleX][middleY] != null &&
-//                    fields[middleX][middleY].getColor() != color &&
-//                    fields[newX][newY] == null;
-//        }
-//        return false;
-//    }
-//    private boolean isValidPosition(int x, int y) {
-//        return x >= 0 && x < size && y >= 0 && y < size;
-//    }
     public boolean isValidMove(int newX, int newY) {
         if (!isValidPosition(newX, newY)) {
             return false;
@@ -118,7 +92,8 @@ public class Pawn {
     }
 
     private boolean isMoveValidForKing(int newX, int newY) {
-        return isDiagonalMove(newX, newY) && getPieceOnPath(newX, newY) == null;
+        Coordinates pieceOnPath = getPieceOnPath(newX, newY);
+        return isDiagonalMove(newX, newY) && pieceOnPath != null && pieceOnPath.getX() == 0 && pieceOnPath.getY() == 0;
     }
 
     public Coordinates isJumpValidForKing(int newX, int newY) {
@@ -136,14 +111,27 @@ public class Pawn {
         int directionY = Integer.compare(newY, position.getY());
         int x = position.getX() + directionX;
         int y = position.getY() + directionY;
+        int pieceCount = 0;
+        Coordinates singlePieceCoordinates = null;
         while (x != newX && y != newY) {
             if (fields[x][y] != null) {
-                return new Coordinates(x, y);
+                pieceCount++;
+                if (pieceCount > 1) {
+                    return null;
+                } else {
+                    singlePieceCoordinates = new Coordinates(x, y);
+                }
             }
             x += directionX;
             y += directionY;
         }
-        return null;
+        if (pieceCount == 0) {
+            return new Coordinates(0, 0);
+        } else if (pieceCount == 1) {
+            return singlePieceCoordinates;
+        } else {
+            return null;
+        }
     }
 
     private boolean isValidPosition(int x, int y) {
