@@ -89,25 +89,36 @@ public class Board {
             return;
         }
 
-        int middleRow = (fromRow + toRow) / 2;
-        int middleCol = (fromCol + toCol) / 2;
+        Coordinates capturedPawnCoordinates = null;
+        Coordinates capturedPawnCoordinatesForRegularPawn = null;
 
-        if (Math.abs(toRow - fromRow) == 2 && Math.abs(toCol - fromCol) == 2 &&
-                fields[middleRow][middleCol] != null &&
-                fields[middleRow][middleCol].getColor() != pawn.getColor()) {
-            removePawn(middleRow, middleCol);
+        if (Math.abs(toRow - fromRow) >= 2 && Math.abs(toCol - fromCol) >= 2) {
+            if (pawn.isCrowned()) {
+                capturedPawnCoordinates = pawn.isJumpValidForKing(toRow, toCol);
+            } else {
+                capturedPawnCoordinatesForRegularPawn = pawn.isJumpValidForRegularPawn(toRow, toCol);
+            }
+        }
+
+        if (capturedPawnCoordinates != null) {
+            removePawn(capturedPawnCoordinates.getX(), capturedPawnCoordinates.getY());
+        } else if (capturedPawnCoordinatesForRegularPawn != null) {
+            removePawn(capturedPawnCoordinatesForRegularPawn.getX(), capturedPawnCoordinatesForRegularPawn.getY());
         }
 
         Coordinates coordinates = pawn.getPosition();
         coordinates.setX(toRow);
         coordinates.setY(toCol);
 
+
         fields[toRow][toCol] = pawn;
         fields[fromRow][fromCol] = null;
 
 
-        if (toRow == 0 || toRow == size - 1) {
-            pawn.setCrowned(true);
+        if (!pawn.isCrowned()) {
+            if (toRow == 0 || toRow == size - 1) {
+                pawn.setCrowned(true);
+            }
         }
     }
 

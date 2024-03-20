@@ -66,16 +66,21 @@ public class Pawn {
         }
 
         boolean isDiagonalMove = isDiagonalMove(newX, newY);
-        if (!isCrowned) {
-            if (isDiagonalMove) {
-                if (isMoveValidForRegularPawn(newX, newY) || isJumpValidForRegularPawn(newX, newY)) {
-                    return true;
-                }
+        if (isCrowned) {
+            Coordinates capturedPieceForKing = isJumpValidForKing(newX, newY);
+            if (capturedPieceForKing != null) {
+                return true;
+            }
+            if (isDiagonalMove && isMoveValidForKing(newX, newY)) {
+                return true;
             }
         } else {
             if (isDiagonalMove) {
-                if (isMoveValidForKing(newX, newY) || isJumpValidForKing(newX, newY)) {
+                if (isMoveValidForRegularPawn(newX, newY)) {
                     return true;
+                } else {
+                    Coordinates capturedPiece = isJumpValidForRegularPawn(newX, newY);
+                    return capturedPiece != null;
                 }
             }
         }
@@ -97,58 +102,48 @@ public class Pawn {
         return isDiagonalMove(newX, newY) && deltaX == direction && Math.abs(deltaY) == 1;
     }
 
-    private boolean isJumpValidForRegularPawn(int newX, int newY) {
+    public Coordinates isJumpValidForRegularPawn(int newX, int newY) {
         int deltaX = Math.abs(newX - position.getX());
         int deltaY = Math.abs(newY - position.getY());
 
         if (deltaX == 2 && deltaY == 2) {
             int middleX = (newX + position.getX()) / 2;
             int middleY = (newY + position.getY()) / 2;
-            return fields[middleX][middleY] != null && fields[middleX][middleY].getColor() != color;
+            if (fields[middleX][middleY] != null && fields[middleX][middleY].getColor() != color) {
+                return new Coordinates(middleX, middleY);
+            }
         }
 
-        return false;
+        return null;
     }
 
     private boolean isMoveValidForKing(int newX, int newY) {
-        return isDiagonalMove(newX, newY) && !isPieceOnPath(newX, newY);
+        return isDiagonalMove(newX, newY) && getPieceOnPath(newX, newY) == null;
     }
 
-    private boolean isJumpValidForKing(int newX, int newY) {
-        if (isDiagonalMove(newX, newY) && isPieceOnPath(newX, newY)) {
-            int directionX = Integer.compare(newX, position.getX());
-            int directionY = Integer.compare(newY, position.getY());
-            int x = position.getX() + directionX;
-            int y = position.getY() + directionY;
-            while (x != newX && y != newY) {
-                if (fields[x][y] != null) {
-                    if (fields[x][y].getColor() != color) {
-                        return fields[newX][newY] == null;
-                    } else {
-                        return false;
-                    }
-                }
-                x += directionX;
-                y += directionY;
+    public Coordinates isJumpValidForKing(int newX, int newY) {
+        if (isDiagonalMove(newX, newY)) {
+            Coordinates pieceOnPath = getPieceOnPath(newX, newY);
+            if (pieceOnPath != null && fields[newX][newY] == null) {
+                return pieceOnPath;
             }
-            return false;
         }
-        return false;
+        return null;
     }
 
-    private boolean isPieceOnPath(int newX, int newY) {
+    public Coordinates getPieceOnPath(int newX, int newY) {
         int directionX = Integer.compare(newX, position.getX());
         int directionY = Integer.compare(newY, position.getY());
         int x = position.getX() + directionX;
         int y = position.getY() + directionY;
         while (x != newX && y != newY) {
             if (fields[x][y] != null) {
-                return true;
+                return new Coordinates(x, y);
             }
             x += directionX;
             y += directionY;
         }
-        return false;
+        return null;
     }
 
     private boolean isValidPosition(int x, int y) {
